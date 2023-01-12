@@ -7,8 +7,7 @@ services:
 #      - "80:80"
       - "443:443"
     volumes:
-      - "./prod_settings/nginx-https.conf:/etc/nginx/conf.d/default.conf"
-      - "./entrypoint.sh:/entrypoint.sh"
+      - "./nginx.confd/nginx-https.conf:/etc/nginx/conf.d/default.conf"
       - "/etc/ssl/private/nginx_test.key:/etc/ssl/private/nginx_test.key"
       - "/etc/ssl/certs/nginx_test.crt:/etc/ssl/certs/nginx_test.crt"
 # create ssl certs
