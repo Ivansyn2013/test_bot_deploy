@@ -5,7 +5,6 @@ from aiogram import types
 from aiogram import executor as ex
 from aiogram.types import InputFile, InputMedia
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from mysql_connet_connector import db_mysql_request
 from aiogram import Bot, Dispatcher, executor, md, types
 from aiogram.utils.callback_data import CallbackData
 from dotenv import load_dotenv
