@@ -14,8 +14,8 @@ class Webhooks_setttings():
             return None
         req = requests.post(f'https://api.telegram.org/bot{self.BOTTOKEN}/setWebhook',
                             headers={'Content-Type': 'application/json'},
-                            json={'url':'https://176.119.157.117'},
-                            certificate=file,
+                            json={'url':'https://176.119.157.117',
+                                  'certificate':file},
                             )
 
 
