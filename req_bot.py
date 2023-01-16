@@ -4,12 +4,19 @@ import os
 import fire
 
 class Webhooks_setttings():
+    '''
+    registration: for connect to api.telegrambot and set weebhook, sent self singet cert from
+        '/etc/ssl/certs/nginx_test.pem'
+    get_webhook_info: get info from api.telegrambot
+    del_webhook: unset weebhook
+
+    '''
     load_dotenv()
     BOTTOKEN = os.getenv('BOTTOKEN')
-    def registation(self):
+    def registration(self):
         #нужно передать самоподписной сертификат
         try:
-            file = open('/etc/ssl/certs/nginx_test.pem', 'rb')
+            file = '/etc/ssl/certs/nginx_test.pem'
         except:
             return None
         req = requests.post(f'https://api.telegram.org/bot{self.BOTTOKEN}/setWebhook',
@@ -44,3 +51,4 @@ class Webhooks_setttings():
 
 if __name__=='__main__':
     fire.Fire(Webhooks_setttings)
+

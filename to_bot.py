@@ -12,6 +12,6 @@ def send_mes(chat_id, text):
     data = 1
     requests.post(url, data=data,)
 
-r = requests.post('http://127.0.0.1:5000', json={'chat_id':'76.119.157.117'})
+r = requests.post('http://127.0.0.1:5000', json={'chat_id':'176.119.157.117'})
 print(r.json)
 print(r.text)
