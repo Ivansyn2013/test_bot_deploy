@@ -1,11 +1,8 @@
-from aiogram import Bot
+
 from aiogram.dispatcher import Dispatcher
 import os
-from aiogram import types
-from aiogram import executor as ex
-from aiogram.types import InputFile, InputMedia
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram import Bot, Dispatcher, executor, md, types
+from aiogram import Bot, types
 from aiogram.utils.callback_data import CallbackData
 from dotenv import load_dotenv
 import logging
@@ -39,7 +36,7 @@ test_mes = "'''\nLorem ipsum dolor sit amet, " \
 my_cb = CallbackData('id', 'action')
 
 bot = Bot(token=os.getenv('BOTTOKEN'))
-print(os.getenv('BOTTOKEN'))
+
 dp = Dispatcher(bot)
 
 WEBAPP_HOST = os.getenv('WEBAPP_HOST')
@@ -141,6 +138,7 @@ async def any_message(message: types.Message):
 
 
 async def on_startup(dp):
+    print('Bot starting')
     await bot.set_webhook(WEBHOOK_URL)
 
     # insert code here to run it after start
