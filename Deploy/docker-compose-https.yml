@@ -24,8 +24,10 @@ services:
       - "../bot.py:/app/app.py"
       - "../req.txt:/app/req.txt"
 
-    ports:
-      - "5000:5000"
+    #ports:
+    #  - "5000:5000"
+    expose:
+      - 5000
     env_file:
       - "../.env"
 #    environment:
