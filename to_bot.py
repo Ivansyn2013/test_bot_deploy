@@ -8,7 +8,7 @@ WEBHOOK_URL = os.getenv('WEBHOOK_URL')
 def send_mes(chat_id, text):
     method = 'sendMessage'
     token = os.getenv('BOTTOKEN')
-    url = 'http://127.0.0.1:5000'
+    url = 'http://127.0.0.1:5001'
     data = 1
     requests.post(url, data=data,)
 
