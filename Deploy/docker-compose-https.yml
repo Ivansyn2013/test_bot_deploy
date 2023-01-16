@@ -27,7 +27,7 @@ services:
     ports:
       - "5000:5000"
     env_file:
-      - ".env"
+      - "../.env"
 #    environment:
 #      - FLASK_APP=app.py
 #      - FLASK_RUN_HOST=0.0.0.0
