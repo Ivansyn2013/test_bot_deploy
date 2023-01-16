@@ -36,13 +36,12 @@ test_mes = "'''\nLorem ipsum dolor sit amet, " \
 my_cb = CallbackData('id', 'action')
 
 bot = Bot(token=os.getenv('BOTTOKEN'))
-
 dp = Dispatcher(bot)
 
 WEBAPP_HOST = os.getenv('WEBAPP_HOST')
 WEBAPP_PORT = os.getenv('WEBAPP_PORT')
 WEBHOOK_URL = os.getenv('WEBHOOK_URL')
-
+WEBHOOK_PATH = os.getenv('WEBHOOK_PATH')
 
 dp.middleware.setup(LoggingMiddleware())
 
