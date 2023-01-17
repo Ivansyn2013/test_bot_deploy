@@ -1,4 +1,5 @@
 
+import sys
 from aiogram.dispatcher import Dispatcher
 import os
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -134,6 +135,7 @@ async def some_callback(callback: types.CallbackQuery):
 async def any_message(message: types.Message):
     print('ANY_MESS::')
     print(message.get_args())
+    sys.stdout.write('*****Message input\n')
 
 
 async def on_startup(dp):
@@ -141,7 +143,7 @@ async def on_startup(dp):
     await bot.set_webhook(WEBHOOK_URL)
 
     # insert code here to run it after start
-
+    sys.stdout.write('*****Calback from bot starting function\n')
 
 async def on_shutdown(dp):
     logging.warning('Shutting down..')

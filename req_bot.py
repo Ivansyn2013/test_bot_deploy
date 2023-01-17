@@ -16,13 +16,13 @@ class Webhooks_setttings():
     def registration(self):
         #нужно передать самоподписной сертификат
         try:
-            file = '/etc/ssl/certs/nginx_test.pem'
+            file = open('/home/common_user/test_bot_app/test_bot_deploy/ssl/bot_pub.pem','rb') 
         except:
-            return None
+            return 'Error File not Found' 
         req = requests.post(f'https://api.telegram.org/bot{self.BOTTOKEN}/setWebhook',
-                            headers={'Content-Type': 'application/json'},
+                   
                             json={'url':'https://176.119.157.117',
-                                  'certificate':file},
+                                'certificate':f'{file}'},
                             )
 
 
