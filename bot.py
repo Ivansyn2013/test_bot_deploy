@@ -1,11 +1,9 @@
-from aiogram import Bot
+
+import sys
 from aiogram.dispatcher import Dispatcher
 import os
-from aiogram import types
-from aiogram import executor as ex
-from aiogram.types import InputFile, InputMedia
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram import Bot, Dispatcher, executor, md, types
+from aiogram import Bot, types
 from aiogram.utils.callback_data import CallbackData
 from dotenv import load_dotenv
 import logging
@@ -39,13 +37,12 @@ test_mes = "'''\nLorem ipsum dolor sit amet, " \
 my_cb = CallbackData('id', 'action')
 
 bot = Bot(token=os.getenv('BOTTOKEN'))
-print(os.getenv('BOTTOKEN'))
 dp = Dispatcher(bot)
 
 WEBAPP_HOST = os.getenv('WEBAPP_HOST')
 WEBAPP_PORT = os.getenv('WEBAPP_PORT')
 WEBHOOK_URL = os.getenv('WEBHOOK_URL')
-
+WEBHOOK_PATH = os.getenv('WEBHOOK_PATH')
 
 dp.middleware.setup(LoggingMiddleware())
 
@@ -138,13 +135,15 @@ async def some_callback(callback: types.CallbackQuery):
 async def any_message(message: types.Message):
     print('ANY_MESS::')
     print(message.get_args())
+    sys.stdout.write('*****Message input\n')
 
 
 async def on_startup(dp):
+    print('Bot starting')
     await bot.set_webhook(WEBHOOK_URL)
 
     # insert code here to run it after start
-
+    sys.stdout.write('*****Calback from bot starting function\n')
 
 async def on_shutdown(dp):
     logging.warning('Shutting down..')
