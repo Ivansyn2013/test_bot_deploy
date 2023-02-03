@@ -2,13 +2,19 @@
 import sys
 from aiogram.dispatcher import Dispatcher
 import os
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, PreCheckoutQuery
 from aiogram import Bot, types
 from aiogram.utils.callback_data import CallbackData
 from dotenv import load_dotenv
 import logging
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.utils.executor import start_webhook
+from aiogram.utils import executor
+
+
+from aiogram.types import ContentType
+from aiogram.dispatcher.filters import ContentTypeFilter
+from pay import gift, pre_checkout_query, successful_payment
 
 load_dotenv()
 
@@ -76,6 +82,22 @@ kb_list = [get_inline_kb() for x in range(5)]
 # inline_k.add(inline_but1, inline_but2, inline_but3)
 inline_k.add(*buttons)
 
+
+
+@dp.message_handler(commands=['pay'])
+async def init_gift(message: types.Message):
+    await gift(message, bot)
+
+
+@dp.pre_checkout_query_handler()
+async def init_pre_checkout(p_ch: PreCheckoutQuery):
+    await pre_checkout_query(p_ch, bot)
+
+
+@dp.message_handler(ContentTypeFilter(content_types=[
+    ContentType.SUCCESSFUL_PAYMENT]))
+async def init_success(message: types.Message):
+    await successful_payment(message)
 
 @dp.message_handler(commands=['start', 'help'])
 async def start_test(message: types.Message):
@@ -167,14 +189,22 @@ def prim():
     print('work!')
 
 
-# ex.start_polling(dp, skip_updates=True)
-if __name__ == '__main__':
-    start_webhook(
-        dispatcher=dp,
-        webhook_path='/',
-        on_startup=on_startup,
-        on_shutdown=on_shutdown,
-        skip_updates=True,
-        host=WEBAPP_HOST,
-        port=WEBAPP_PORT,
-    )
+#dp.register_pre_checkout_query_handler(pre_checkout_query)
+#dp.register_message_handler(successful_payment, ContentTypeFilter(
+#    content_types=[ContentType.SUCCESSFUL_PAYMENT]) )
+
+
+
+
+
+executor.start_polling(dp, skip_updates=True)
+# if __name__ == '__main__':
+#     start_webhook(
+#         dispatcher=dp,
+#         webhook_path='/',
+#         on_startup=on_startup,
+#         on_shutdown=on_shutdown,
+#         skip_updates=True,
+#         host=WEBAPP_HOST,
+#         port=WEBAPP_PORT,
+#     )
