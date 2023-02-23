@@ -2,6 +2,7 @@ import requests
 from dotenv import load_dotenv
 import os
 import fire
+import json
 
 class Webhooks_setttings():
     load_dotenv()
@@ -15,7 +16,7 @@ class Webhooks_setttings():
         req = requests.post(f'https://api.telegram.org/bot{self.BOTTOKEN}/setWebhook',
                             headers={'Content-Type': 'application/json'},
                             json={'url':'https://176.119.157.117',
-                                  'certificate':file},
+                                  'certificate':json.dump()},
                             )
 
 

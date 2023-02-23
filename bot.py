@@ -1,6 +1,8 @@
 from aiogram import Bot
 from aiogram.dispatcher import Dispatcher
 import os
+import uuid
+import typing
 from aiogram import types
 from aiogram import executor as ex
 from aiogram.types import InputFile, InputMedia
@@ -11,6 +13,9 @@ from dotenv import load_dotenv
 import logging
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.utils.executor import start_webhook
+from aiogram.utils.callback_data import CallbackData
+from test import TEST_DICT
+
 
 load_dotenv()
 
@@ -30,7 +35,7 @@ html_mes = '<b>bold</b>, <strong>bold</strong> \
 <pre>pre-formatted fixed-width code block</pre>' \
            '<pre><code class="language-python">pre-formatted fixed-width code block written in the \
         Python programming language</code></pre>'
-
+cd_data = CallbackData('button', 'id', 'bd_id', 'action', 'kb_number')
 test_mes = "'''\nLorem ipsum dolor sit amet, " \
            "consectetur adipisicing elit\. Aperiam dolor  \
            libero amet tempora, ducimus quo incidunt? Dicta magni  sed dolore tenetur  \
@@ -95,6 +100,41 @@ async def start_search(message: types.Message):
     message.text
     await message.delete()
 
+@dp.message_handler(commands=['spinner'])
+async def test_spinner(message: types.Message):
+    global kb_fruts
+    kb_fruts = await get_product_list_kb(TEST_DICT)
+    print('Len of kb_fruts ' + str(len(kb_fruts)))
+    await message.answer('fdfd', reply_markup=kb_fruts[0])
+
+##########################
+@dp.callback_query_handler(cd_data.filter(action='next'))
+async def product_list_callback_next(query: types.CallbackQuery,
+                                     callback_data: typing.Dict[str, str]):
+    print(callback_data['kb_number'])
+
+    kb_number = int(callback_data['kb_number'])
+    if kb_number >= len(kb_fruts) - 1:
+        await  query.answer()
+    else:
+        await query.answer()
+        await query.message.edit_text('Список продуктов',
+                                      reply_markup=kb_fruts[kb_number + 1])
+
+@dp.callback_query_handler(cd_data.filter(action='back'))
+async def product_list_callback_back(query: types.CallbackQuery,
+                                     callback_data: typing.Dict[str, str]):
+    print(callback_data['kb_number'])
+
+    kb_number = int(callback_data['kb_number'])
+    if kb_number == 0:
+        await  query.answer()
+    else:
+        await query.answer()
+        await query.message.edit_text('Список продуктов',
+                                      reply_markup=kb_fruts[kb_number - 1])
+###################################
+
 
 @dp.message_handler(commands=['inline'])
 async def inline_kb(message: types.Message):
@@ -110,14 +150,14 @@ async def inline_kb(message: types.Message):
     print(message.get_args())
 
 
-@dp.callback_query_handler(text='>:1')
+#@dp.callback_query_handler(text='>:1')
 async def callback_next(query: types.CallbackQuery):
     await query.answer()
     index = int(query.data.split(':')[1])
     await query.message.edit_text('Новая кб', reply_markup=kb_list[1])
 
 
-@dp.callback_query_handler(text='www')
+#@dp.callback_query_handler(text='www')
 async def some_callback(callback: types.CallbackQuery):
     print('text', end='::')
     print(callback.message.text)
@@ -168,14 +208,92 @@ def prim():
     print('work!')
 
 
-# ex.start_polling(dp, skip_updates=True)
+async def get_product_list_kb(all_product_dict: dict) -> types.InlineKeyboardButton:
+    '''
+
+    :param all_product_dict:dict with product name: product id from db
+    :return:inline_kb
+    '''
+    cd_data = CallbackData('button', 'id', 'bd_id', 'action', 'kb_number')
+
+    pd = all_product_dict
+    kb_list = []
+    but_list = []
+    inline_but_kb = InlineKeyboardMarkup(row_width=2, resize_keyboard=True)
+
+    for name, id in sorted(pd.items()):
+        b = InlineKeyboardButton(text=f'{name}',
+                                 callback_data=cd_data.new(
+                                     id=str(uuid.uuid4()),
+                                     action='search_in',
+                                     bd_id=id,
+                                     kb_number=0,
+                                 ),
+                                 )
+        but_list.append(b)
+
+    if len(but_list) > 15:
+
+        for index in range(0, len(but_list), 14):
+            inline_but_kb.add(*but_list[index:index+14])
+
+            inline_but_kb.row(InlineKeyboardButton(text='Назад',
+                                                   callback_data=cd_data.new(
+                                                       id=str(uuid.uuid4()),
+                                                       action='back',
+                                                       bd_id=id,
+                                                       kb_number=index // 14,
+                                                   )
+                                                   ),
+                              InlineKeyboardButton(text='Вперед',
+                                                   callback_data=cd_data.new(
+                                                       id=str(uuid.uuid4()),
+                                                       action='next',
+                                                       bd_id=id,
+                                                       kb_number=index // 14,
+                                                   )
+                                                   ))
+
+            kb_list.append(inline_but_kb)
+
+            inline_but_kb = InlineKeyboardMarkup(row_width=2, resize_keyboard=True)
+        else:
+            inline_but_kb.add(*but_list[(len(but_list)//14)*14:])
+            inline_but_kb.row(InlineKeyboardButton(text='Назад',
+                                                   callback_data=cd_data.new(
+                                                       id=str(uuid.uuid4()),
+                                                       action='back',
+                                                       bd_id=id,
+                                                       kb_number=(len(but_list) // 14 +1),
+                                                   )
+                                                   ),
+                              InlineKeyboardButton(text='Вперед',
+                                                   callback_data=cd_data.new(
+                                                       id=str(uuid.uuid4()),
+                                                       action='next',
+                                                       bd_id=id,
+                                                       kb_number=(len(but_list) // 14 +1),
+                                                   )
+                                                   ))
+
+            kb_list.append(inline_but_kb)
+
+
+    else:
+        inline_but_kb.add(*but_list)
+        kb_list.append(inline_but_kb)
+    # print(len(kb_list))
+    return kb_list
+
+
 if __name__ == '__main__':
-    start_webhook(
-        dispatcher=dp,
-        webhook_path='/',
-        on_startup=on_startup,
-        on_shutdown=on_shutdown,
-        skip_updates=True,
-        host=WEBAPP_HOST,
-        port=WEBAPP_PORT,
-    )
+    ex.start_polling(dp, skip_updates=True)
+    # start_webhook(
+    #     dispatcher=dp,
+    #     webhook_path='/',
+    #     on_startup=on_startup,
+    #     on_shutdown=on_shutdown,
+    #     skip_updates=True,
+    #     host=WEBAPP_HOST,
+    #     port=WEBAPP_PORT,
+    # )
